@@ -5,8 +5,8 @@
 
 > __Mais informacoes sobre a Arquitetura QA__
 
->		Email = marcosregato01@gmail.com
->		Assunto = Arquitetura QA
+>	Email = marcosregato01@gmail.com <br/>
+>	Assunto = Arquitetura QA
 
 > __Descricao do projeto__
 
@@ -53,5 +53,8 @@
 
 > __Gerador massa de dados QA__
 > [GitHub Pages](https://github.com/marcosregato/geradorMassaQA).</br>
+
+> __Api QA__
+> [GitHub Pages](https://github.com/marcosregato/apiQA).</br>
 
 # apiQA
