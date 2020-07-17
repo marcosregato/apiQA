@@ -40,7 +40,4 @@ public class TesteFuncionalImple implements TesteFuncionalService{
 		this.respository.delete(id);
 		
 	}
-	
-	
-
 }

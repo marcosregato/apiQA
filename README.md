@@ -1,16 +1,16 @@
 # apiQA
 
-> 	Painel Teste, faz parte de um projeto de arquitetura de QA.
+> 	Api QA, faz parte do projeto de arquitetura de QA.
 > 	Versão 04
 
-> __Mais informacoes sobre a Arquitetura QA__
+> __Mais Informações sobre a Arquitetura QA__
 
 >	Email = marcosregato01@gmail.com <br/>
 >	Assunto = Arquitetura QA
 
-> __Descricao do projeto__
+> __Descrição do projeto__
 
->		Recebe as informações (formato JSON) dos resultados dos teste e envia para o banco de dados (MongoDB)
+>	Recebe as informações (formato JSON) dos resultados dos teste e envia para o banco de dados (MongoDB)
 
 ![Semantic description of image](./diagrama.png)</p>
 
@@ -29,32 +29,27 @@
 > 	sudo kill -9 $(lsof -i :8080) <br/> 
 
 # URL para acessar API
-> Acesse http://localhost:8080/api/clientes
+> Acesse http://localhost:8080/api/
 
 # Links dos projetos da arquitetura
 
 > __Modelo Teste Funcional__
-> [GitHub Pages](https://github.com/marcosregato/modeloTesteFuncional).</br>
+> [Link do projeto](https://github.com/marcosregato/modeloTesteFuncional).</br>
 
 > __Painel Teste Angular__
-> 	[GitHub Pages](https://github.com/marcosregato/painelTesteAngular).</br>
+> [Link do projeto](https://github.com/marcosregato/painelTesteAngular).</br>
 
-> __Api QA__
-> [GitHub Pages](https://github.com/marcosregato/apiTesteMongoDB).</br>
+> __Teste API QA__
+> [Link do projeto](https://github.com/marcosregato/testeApiQA).</br>
 
 > __convert CSV to JSON__
-> [GitHub Pages](https://github.com/marcosregato/convertCSVtoJSON).</br>
+> [Link do projeto](https://github.com/marcosregato/convertCSVtoJSON).</br>
 
 > __Data Science QA__
-> [GitHub Pages](https://github.com/marcosregato/dataScienceQA).</br>
-
-> __Teste Api QA__
-> [GitHub Pages](https://github.com/marcosregato/testeApiQA).</br>
-
-> __Gerador massa de dados QA__
-> [GitHub Pages](https://github.com/marcosregato/geradorMassaQA).</br>
+> [Link do projetos](https://github.com/marcosregato/dataScienceQA).</br>
 
 > __Api QA__
-> [GitHub Pages](https://github.com/marcosregato/apiQA).</br>
+> [Link do projeto](https://github.com/marcosregato/apiQA).</br>
 
-# apiQA
+> __Gerador massa de dados QA__
+> [Link do projeto](https://github.com/marcosregato/geradorMassaQA).</br>
