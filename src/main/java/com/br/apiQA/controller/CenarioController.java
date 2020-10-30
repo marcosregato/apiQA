@@ -1,13 +1,13 @@
 package com.br.apiQA.controller;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.br.apiQA.documents.Cenario;
-import com.br.apiQA.responses.ResponseCenario;
-import com.br.apiQA.services.CenarioService;
+import com.br.apiQA.error.ResourceNotFoundException;
+import com.br.apiQA.model.Cenario;
+import com.br.apiQA.repositories.CenarioRepository;
 
 
 @RestController
@@ -27,45 +27,50 @@ import com.br.apiQA.services.CenarioService;
 public class CenarioController {
 	
 	@Autowired
-	private CenarioService service;
+	private CenarioRepository repository;
 	
 	@GetMapping
-	public ResponseEntity<ResponseCenario<List<Cenario>>> listarTodos() {
-		return ResponseEntity.ok(new ResponseCenario<List<Cenario>>(this.service.listarTodos()));
+	public List<Cenario> listarTodos() throws ResourceNotFoundException {
+		return repository.findAll();
 	}
-	
-	@GetMapping(path = "/{id}")
-	public ResponseEntity<ResponseCenario<Cenario>> listarPorId(@PathVariable(name = "id") String id) {
-		return ResponseEntity.ok(new ResponseCenario<Cenario>(this.service.listarPorId(id)));
+
+	@GetMapping(path = "/cenario/{id}")
+	public ResponseEntity<Cenario> getId(@PathVariable(value = "id") Long id) 
+			throws ResourceNotFoundException {
+
+		Cenario idProjeto = repository.findById(id).orElseThrow(()
+				-> new ResourceNotFoundException("TesteUnitario não encontrado para este id -> " + id));
+		return ResponseEntity.ok().body(idProjeto);
 	}
-	
-	@PostMapping
-	public ResponseEntity<ResponseCenario<Cenario>> cadastrar(@Valid @RequestBody Cenario valor, BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> erros = new ArrayList<String>();
-			result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
-			return ResponseEntity.badRequest().body(new ResponseCenario<Cenario>(erros));
-		}
-		
-		return ResponseEntity.ok(new ResponseCenario<Cenario>(this.service.cadastrar(valor)));
+
+	@PostMapping("/cenario")
+	public Cenario salvar(@Valid @RequestBody Cenario valor) 
+			throws ResourceNotFoundException {
+		return repository.save(valor);
 	}
-	
-	@PutMapping(path = "/{id}")
-	public ResponseEntity<ResponseCenario<Cenario>> atualizar(@PathVariable(name = "id") String id, @Valid @RequestBody Cenario valor, BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> erros = new ArrayList<String>();
-			result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
-			return ResponseEntity.badRequest().body(new ResponseCenario<Cenario>(erros));
-		}
-		
-		valor.setId(id);
-		return ResponseEntity.ok(new ResponseCenario<Cenario>(this.service.atualizar(valor)));
+
+	@PutMapping(path = "/cenario/{id}")
+	public ResponseEntity<Cenario> update(@PathVariable(name = "id") Long id, @Valid @RequestBody Cenario valor) 
+			throws ResourceNotFoundException {
+		Cenario cenario = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado para este id -> " + id));
+
+		cenario.setId(cenario.getId());
+		cenario.setNome(cenario.getNome());
+		final Cenario update = repository.save(valor);
+		return ResponseEntity.ok(update);
 	}
-	
-	@DeleteMapping(path = "/{id}")
-	public ResponseEntity<ResponseCenario<Integer>> remover(@PathVariable(name = "id") String id) {
-		this.service.remover(id);
-		return ResponseEntity.ok(new ResponseCenario<Integer>(1));
+
+	@DeleteMapping("/projeto/{id}")
+	public Map < String, Boolean > delete(@PathVariable(name = "id") Long id) 
+			throws ResourceNotFoundException {
+		Cenario projeto = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado para este id -> " + id));
+
+		repository.delete(projeto);
+		Map < String, Boolean > response = new HashMap < > ();
+		response.put("deleted", Boolean.TRUE);
+		return response;
 	}
 
 }

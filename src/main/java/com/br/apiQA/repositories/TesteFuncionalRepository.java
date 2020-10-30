@@ -1,9 +1,11 @@
 package com.br.apiQA.repositories;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import com.br.apiQA.documents.TesteFuncional;
+import com.br.apiQA.model.TesteFuncional;
 
-public interface TesteFuncionalRepository extends MongoRepository<TesteFuncional, String> {
+@Repository
+public interface TesteFuncionalRepository extends JpaRepository<TesteFuncional, Long> {
 
 }

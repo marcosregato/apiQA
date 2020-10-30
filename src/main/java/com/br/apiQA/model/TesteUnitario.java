@@ -1,23 +1,33 @@
-package com.br.apiQA.documents;
+package com.br.apiQA.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Table;
 
-@Document
+import javax.persistence.Id;
+
+@Entity
+@Table(name = "testeUnitario")
 public class TesteUnitario {
 
 	@Id
-	private String id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 	private String total_teste;
 	private String passou;
 	private String erro;
 	private String tempo_total;
 	private String data;
 	
-	public String getId() {
+	public TesteUnitario() {
+		
+	}
+	
+	public Long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getTotal_teste() {

@@ -1,13 +1,13 @@
 package com.br.apiQA.controller;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.br.apiQA.documents.Cliente;
-import com.br.apiQA.responses.ResponseCliente;
-import com.br.apiQA.services.ClienteService;
+import com.br.apiQA.error.ResourceNotFoundException;
+import com.br.apiQA.model.Cliente;
+import com.br.apiQA.repositories.ClienteRepository;
 
 
 @RestController
@@ -27,45 +27,51 @@ import com.br.apiQA.services.ClienteService;
 public class ClienteController {
 	
 	@Autowired
-	private ClienteService service;
+	private ClienteRepository repository;
 	
 	@GetMapping
-	public ResponseEntity<ResponseCliente<List<Cliente>>> listarTodos() {
-		return ResponseEntity.ok(new ResponseCliente<List<Cliente>>(this.service.listarTodos()));
+	public List<Cliente> listarTodos() throws ResourceNotFoundException {
+		return repository.findAll();
 	}
-	
-	@GetMapping(path = "/{id}")
-	public ResponseEntity<ResponseCliente<Cliente>> listarPorId(@PathVariable(name = "id") String id) {
-		return ResponseEntity.ok(new ResponseCliente<Cliente>(this.service.listarPorId(id)));
+
+	@GetMapping(path = "/cliente/{id}")
+	public ResponseEntity<Cliente> getId(@PathVariable(value = "id") Long id) 
+			throws ResourceNotFoundException {
+
+		Cliente idProjeto = repository.findById(id).orElseThrow(()
+				-> new ResourceNotFoundException("TesteUnitario não encontrado para este id -> " + id));
+		return ResponseEntity.ok().body(idProjeto);
 	}
-	
-	@PostMapping
-	public ResponseEntity<ResponseCliente<Cliente>> cadastrar(@Valid @RequestBody Cliente valor, BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> erros = new ArrayList<String>();
-			result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
-			return ResponseEntity.badRequest().body(new ResponseCliente<Cliente>(erros));
-		}
-		
-		return ResponseEntity.ok(new ResponseCliente<Cliente>(this.service.cadastrar(valor)));
+
+	@PostMapping("/cliente")
+	public Cliente salvar(@Valid @RequestBody Cliente valor) 
+			throws ResourceNotFoundException {
+		return repository.save(valor);
 	}
-	
-	@PutMapping(path = "/{id}")
-	public ResponseEntity<ResponseCliente<Cliente>> atualizar(@PathVariable(name = "id") String id, @Valid @RequestBody Cliente valor, BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> erros = new ArrayList<String>();
-			result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
-			return ResponseEntity.badRequest().body(new ResponseCliente<Cliente>(erros));
-		}
-		
-		valor.setId(id);
-		return ResponseEntity.ok(new ResponseCliente<Cliente>(this.service.atualizar(valor)));
+
+	@PutMapping(path = "/cliente/{id}")
+	public ResponseEntity<Cliente> update(@PathVariable(name = "id") Long id, @Valid @RequestBody Cliente valor) 
+			throws ResourceNotFoundException {
+		Cliente cliente = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado para este id -> " + id));
+
+		cliente.setId(cliente.getId());
+		cliente.setNome(cliente.getNome());
+		cliente.setEmail(cliente.getEmail());
+		final Cliente update = repository.save(valor);
+		return ResponseEntity.ok(update);
 	}
-	
-	@DeleteMapping(path = "/{id}")
-	public ResponseEntity<ResponseCliente<Integer>> remover(@PathVariable(name = "id") String id) {
-		this.service.remover(id);
-		return ResponseEntity.ok(new ResponseCliente<Integer>(1));
+
+	@DeleteMapping("/cliente/{id}")
+	public Map < String, Boolean > delete(@PathVariable(name = "id") Long id) 
+			throws ResourceNotFoundException {
+		Cliente projeto = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado para este id -> " + id));
+
+		repository.delete(projeto);
+		Map < String, Boolean > response = new HashMap < > ();
+		response.put("deleted", Boolean.TRUE);
+		return response;
 	}
 
 }

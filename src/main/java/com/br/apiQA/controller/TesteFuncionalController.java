@@ -1,13 +1,13 @@
 package com.br.apiQA.controller;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,54 +17,60 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.br.apiQA.documents.TesteFuncional;
-import com.br.apiQA.responses.ResponseTesteFuncional;
-import com.br.apiQA.services.TesteFuncionalService;
+import com.br.apiQA.error.ResourceNotFoundException;
+import com.br.apiQA.model.TesteFuncional;
+import com.br.apiQA.repositories.TesteFuncionalRepository;
 
 @RestController
 @RequestMapping(path = "/api/testefuncional")
 public class TesteFuncionalController {
-	
+
 	@Autowired
-	private TesteFuncionalService service;
-	
+	private TesteFuncionalRepository repository;
+
 	@GetMapping
-	public ResponseEntity<ResponseTesteFuncional<List<TesteFuncional>>> listarTodos() {
-		return ResponseEntity.ok(new ResponseTesteFuncional<List<TesteFuncional>>(this.service.listarTodos()));
+	public List<TesteFuncional> listarTodos() throws ResourceNotFoundException {
+		return repository.findAll();
 	}
-	
-	@GetMapping(path = "/{id}")
-	public ResponseEntity<ResponseTesteFuncional<TesteFuncional>> listarPorId(@PathVariable(name = "id") String id) {
-		return ResponseEntity.ok(new ResponseTesteFuncional<TesteFuncional>(this.service.listarPorId(id)));
+
+	@GetMapping(path = "/testeFuncional/{id}")
+	public ResponseEntity<TesteFuncional> getId(@PathVariable(value = "id") Long id) 
+			throws ResourceNotFoundException {
+
+		TesteFuncional idProjeto = repository.findById(id).orElseThrow(()
+				-> new ResourceNotFoundException("TesteUnitario não encontrado para este id -> " + id));
+		return ResponseEntity.ok().body(idProjeto);
 	}
-	
-	@PostMapping
-	public ResponseEntity<ResponseTesteFuncional<TesteFuncional>> cadastrar(@Valid @RequestBody TesteFuncional valor, BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> erros = new ArrayList<String>();
-			result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
-			return ResponseEntity.badRequest().body(new ResponseTesteFuncional<TesteFuncional>(erros));
-		}
-		
-		return ResponseEntity.ok(new ResponseTesteFuncional<TesteFuncional>(this.service.cadastrar(valor)));
+
+	@PostMapping("/testeFuncional")
+	public TesteFuncional salvar(@Valid @RequestBody TesteFuncional valor) 
+			throws ResourceNotFoundException {
+		return repository.save(valor);
 	}
-	
-	@PutMapping(path = "/{id}")
-	public ResponseEntity<ResponseTesteFuncional<TesteFuncional>> atualizar(@PathVariable(name = "id") String id, @Valid @RequestBody TesteFuncional valor, BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> erros = new ArrayList<String>();
-			result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
-			return ResponseEntity.badRequest().body(new ResponseTesteFuncional<TesteFuncional>(erros));
-		}
-		
-		valor.setId(id);
-		return ResponseEntity.ok(new ResponseTesteFuncional<TesteFuncional>(this.service.atualizar(valor)));
+
+	@PutMapping(path = "/testeFuncional/{id}")
+	public ResponseEntity<TesteFuncional> update(@PathVariable(name = "id") Long id, @Valid @RequestBody TesteFuncional valor) 
+			throws ResourceNotFoundException {
+		TesteFuncional projeto = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado para este id -> " + id));
+
+		projeto.setId(projeto.getId());
+		projeto.setData(projeto.getData());
+		projeto.setHora(projeto.getHora());
+		final TesteFuncional update = repository.save(valor);
+		return ResponseEntity.ok(update);
 	}
-	
-	@DeleteMapping(path = "/{id}")
-	public ResponseEntity<ResponseTesteFuncional<Integer>> remover(@PathVariable(name = "id") String id) {
-		this.service.remover(id);
-		return ResponseEntity.ok(new ResponseTesteFuncional<Integer>(1));
+
+	@DeleteMapping("/testeFuncional/{id}")
+	public Map < String, Boolean > delete(@PathVariable(name = "id") Long id) 
+			throws ResourceNotFoundException {
+		TesteFuncional projeto = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado para este id -> " + id));
+
+		repository.delete(projeto);
+		Map < String, Boolean > response = new HashMap < > ();
+		response.put("deleted", Boolean.TRUE);
+		return response;
 	}
 
 }

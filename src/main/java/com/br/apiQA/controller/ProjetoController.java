@@ -1,13 +1,13 @@
 package com.br.apiQA.controller;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,54 +17,59 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.br.apiQA.documents.Projeto;
-import com.br.apiQA.responses.ResponseProjeto;
-import com.br.apiQA.services.ProjetoService;
+import com.br.apiQA.error.ResourceNotFoundException;
+import com.br.apiQA.model.Projeto;
+import com.br.apiQA.repositories.ProjetoRepository;
 
 @RestController
 @RequestMapping(path = "/api/projeto")
 public class ProjetoController {
 	
 	@Autowired
-	private ProjetoService service;
+	private ProjetoRepository repository;
 	
 	@GetMapping
-	public ResponseEntity<ResponseProjeto<List<Projeto>>> listarTodos() {
-		return ResponseEntity.ok(new ResponseProjeto<List<Projeto>>(this.service.listarTodos()));
+	public List<Projeto> listarTodos() throws ResourceNotFoundException {
+		return repository.findAll();
 	}
-	
-	@GetMapping(path = "/{id}")
-	public ResponseEntity<ResponseProjeto<Projeto>> listarPorId(@PathVariable(name = "id") String id) {
-		return ResponseEntity.ok(new ResponseProjeto<Projeto>(this.service.listarPorId(id)));
+
+	@GetMapping(path = "/projeto/{id}")
+	public ResponseEntity<Projeto> getId(@PathVariable(value = "id") Long id) 
+			throws ResourceNotFoundException {
+
+		Projeto idProjeto = repository.findById(id).orElseThrow(()
+				-> new ResourceNotFoundException("TesteUnitario não encontrado para este id -> " + id));
+		return ResponseEntity.ok().body(idProjeto);
 	}
-	
-	@PostMapping
-	public ResponseEntity<ResponseProjeto<Projeto>> cadastrar(@Valid @RequestBody Projeto valor, BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> erros = new ArrayList<String>();
-			result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
-			return ResponseEntity.badRequest().body(new ResponseProjeto<Projeto>(erros));
-		}
-		
-		return ResponseEntity.ok(new ResponseProjeto<Projeto>(this.service.cadastrar(valor)));
+
+	@PostMapping("/projeto")
+	public Projeto salvar(@Valid @RequestBody Projeto valor) 
+			throws ResourceNotFoundException {
+		return repository.save(valor);
 	}
-	
-	@PutMapping(path = "/{id}")
-	public ResponseEntity<ResponseProjeto<Projeto>> atualizar(@PathVariable(name = "id") String id, @Valid @RequestBody Projeto valor, BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> erros = new ArrayList<String>();
-			result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
-			return ResponseEntity.badRequest().body(new ResponseProjeto<Projeto>(erros));
-		}
-		
-		valor.setId(id);
-		return ResponseEntity.ok(new ResponseProjeto<Projeto>(this.service.atualizar(valor)));
+
+	@PutMapping(path = "/projeto/{id}")
+	public ResponseEntity<Projeto> update(@PathVariable(name = "id") Long id, @Valid @RequestBody Projeto valor) 
+			throws ResourceNotFoundException {
+		Projeto projeto = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado para este id -> " + id));
+
+		projeto.setId(projeto.getId());
+		projeto.setNome(projeto.getNome());
+		final Projeto update = repository.save(valor);
+		return ResponseEntity.ok(update);
 	}
-	
-	@DeleteMapping(path = "/{id}")
-	public ResponseEntity<ResponseProjeto<Integer>> remover(@PathVariable(name = "id") String id) {
-		this.service.remover(id);
-		return ResponseEntity.ok(new ResponseProjeto<Integer>(1));
+
+	@DeleteMapping("/projeto/{id}")
+	public Map < String, Boolean > delete(@PathVariable(name = "id") Long id) 
+			throws ResourceNotFoundException {
+		Projeto projeto = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Funcionário não encontrado para este id -> " + id));
+
+		repository.delete(projeto);
+		Map < String, Boolean > response = new HashMap < > ();
+		response.put("deleted", Boolean.TRUE);
+		return response;
 	}
 
 }
