@@ -9,14 +9,14 @@
 
 > __Descrição do projeto__
 
->	Faz um teste simple como POST, GET, UPDATE e DELETE para um API
+>	Receber todos os resultados dos testes via JSON e enviar para o banco de dados
 
 
 ![Semantic description of image](./diagrama.png)</p>
 
 > __Ferramenta de desenvolvimento__
 
->  Java 8
+>  Nodejs 12.21.0
 
 # Links dos projetos da arquitetura
 
