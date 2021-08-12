@@ -1,6 +1,6 @@
 # Teste Api QA
 
->  Teste Api QA, faz parte de um projeto de arquitetura de QA.
+>  Teste Api QA, faz parte de um projeto de arquitetura de QA(EM DESENVOLVENDO).
 
 > __Mais Informações sobre a Arquitetura QA__
 
