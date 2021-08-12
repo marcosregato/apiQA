@@ -43,7 +43,3 @@
 
 > __Gerador massa de dados QA__
 > [GitHub Pages](https://github.com/marcosregato/geradorMassaQA).</br>
-
-# testeApiQA
-
-# apiQA

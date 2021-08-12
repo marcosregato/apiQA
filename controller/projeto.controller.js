@@ -18,7 +18,7 @@ exports.create = (req, res) => {
     if (err)
         res.status(500).send({
             message:
-            err.message || "Some error occurred while creating the Customer."
+            err.message || "Some error occurred while creating the projeto."
       });
     else res.send(data);
   });
@@ -30,7 +30,7 @@ exports.findAll = (req, res) => {
         if (err)
           res.status(500).send({
             message:
-              err.message || "Some error occurred while retrieving customers."
+              err.message || "Some error occurred while retrieving projeto."
           });
         else res.send(data);
       });
@@ -42,11 +42,11 @@ exports.findOne = function(req, res) {
         if (err) {
           if (err.kind === "not_found") {
             res.status(404).send({
-              message: `Not found Customer with id ${req.params.customerId}.`
+              message: `Nao existe id ${req.params.projetoId}.`
             });
           } else {
             res.status(500).send({
-              message: "Error retrieving Customer with id " + req.params.customerId
+              message: "Error retrieving projeto with id " + req.params.projetoId
             });
           }
         } else res.send(data);
@@ -58,7 +58,7 @@ exports.update = function(req, res) {
     // Validate Request
   if (!req.body) {
     res.status(400).send({
-      message: "Content can not be empty!"
+      message: "Body vazio!"
     });
   }
 
@@ -69,11 +69,11 @@ exports.update = function(req, res) {
       if (err) {
         if (err.kind === "not_found") {
           res.status(404).send({
-            message: `Not found Customer with id ${req.params.projetoId}.`
+            message: `Not found projeto with id ${req.params.projetoId}.`
           });
         } else {
           res.status(500).send({
-            message: "Error updating Customer with id " + req.params.projetoId
+            message: "Error updating projeto with id " + req.params.projetoId
           });
         }
       } else res.send(data);
@@ -91,7 +91,7 @@ exports.delete = (req, res) => {
             });
           } else {
             res.status(500).send({
-              message: "Could not delete Customer with id " + req.params.projetoId
+              message: "Could not delete projeto with id " + req.params.projetoId
             });
           }
         } else res.send({ message: 'Projeto was deleted successfully!' });
@@ -104,9 +104,9 @@ exports.deleteAll = (req, res) => {
         if (err)
           res.status(500).send({
             message:
-              err.message || "Some error occurred while removing all customers."
+              err.message || "Some error occurred while removing all projeto."
           });
-        else res.send({ message: 'All Customers were deleted successfully!' });
+        else res.send({ message: 'All projeto were deleted successfully!' });
       });
  
 };

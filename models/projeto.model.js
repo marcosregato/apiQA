@@ -67,7 +67,7 @@ ProjetoDB.updateById = function(id, projeto, result) {
           return;
         }
   
-        console.log("updated projeto: ", { id: id, ...customer });
+        console.log("updated projeto: ", { id: id,  });
         result(null, { id: id, ...customer });
       }
     );
